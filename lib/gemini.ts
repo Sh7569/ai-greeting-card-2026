@@ -1,37 +1,34 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI, Modality } from "@google/genai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-
-interface PartWithInlineData {
-  inlineData?: {
-    mimeType: string;
-    data: string;
-  };
-  text?: string;
-}
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
 export async function generateCard(
   imageBase64: string,
   prompt: string
 ): Promise<string> {
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.0-flash-exp",
+  const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash-exp-image-generation",
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: prompt },
+          {
+            inlineData: {
+              mimeType: "image/jpeg",
+              data: imageBase64,
+            },
+          },
+        ],
+      },
+    ],
+    config: {
+      responseModalities: [Modality.IMAGE, Modality.TEXT],
+    },
   });
 
-  const result = await model.generateContent([
-    prompt,
-    {
-      inlineData: {
-        mimeType: "image/jpeg",
-        data: imageBase64,
-      },
-    },
-  ]);
-
-  const response = result.response;
-
   // Extract the generated image from response
-  const parts = response.candidates?.[0]?.content?.parts as PartWithInlineData[] | undefined;
+  const parts = response.candidates?.[0]?.content?.parts;
   if (parts) {
     for (const part of parts) {
       if (part.inlineData?.data) {
@@ -41,6 +38,7 @@ export async function generateCard(
   }
 
   // If no image in response, return the text (for debugging)
-  const text = response.text();
+  const textPart = parts?.find((p) => p.text);
+  const text = textPart?.text || "No response";
   throw new Error(`No image generated. Response: ${text.substring(0, 200)}`);
 }
