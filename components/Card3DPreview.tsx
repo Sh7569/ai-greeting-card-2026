@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, Suspense, useMemo } from "react";
+import { useRef, Suspense, useMemo } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
@@ -11,24 +11,17 @@ interface Card3DPreviewProps {
 }
 
 function FoldableCard({ imageUrl }: { imageUrl: string }) {
-  const leftRef = useRef<THREE.Mesh>(null);
-  const rightRef = useRef<THREE.Mesh>(null);
-  const [foldAngle, setFoldAngle] = useState(0);
+  const cardRef = useRef<THREE.Mesh>(null);
 
   // Load texture
   const texture = useLoader(THREE.TextureLoader, imageUrl);
 
   useFrame((state) => {
-    // Animate fold opening
-    const targetAngle = Math.PI * 0.15; // Slightly open
-    const newAngle = THREE.MathUtils.lerp(foldAngle, targetAngle, 0.05);
-    setFoldAngle(newAngle);
-
-    // Add subtle floating animation
-    if (leftRef.current && rightRef.current) {
+    // Add subtle floating and rotation animation
+    if (cardRef.current) {
       const time = state.clock.getElapsedTime();
-      leftRef.current.position.y = Math.sin(time * 0.5) * 0.05;
-      rightRef.current.position.y = Math.sin(time * 0.5) * 0.05;
+      cardRef.current.position.y = Math.sin(time * 0.5) * 0.05;
+      cardRef.current.rotation.y = Math.sin(time * 0.3) * 0.1;
     }
   });
 
@@ -37,23 +30,9 @@ function FoldableCard({ imageUrl }: { imageUrl: string }) {
 
   return (
     <group rotation={[0.1, 0, 0]}>
-      {/* Left side of card (back) */}
-      <mesh
-        ref={leftRef}
-        position={[-cardWidth / 4, 0, 0]}
-        rotation={[0, foldAngle, 0]}
-      >
-        <planeGeometry args={[cardWidth / 2, cardHeight]} />
-        <meshStandardMaterial color="#1a1a2e" side={THREE.DoubleSide} />
-      </mesh>
-
-      {/* Right side of card (front with image) */}
-      <mesh
-        ref={rightRef}
-        position={[cardWidth / 4, 0, 0]}
-        rotation={[0, -foldAngle, 0]}
-      >
-        <planeGeometry args={[cardWidth / 2, cardHeight]} />
+      {/* Full card with image */}
+      <mesh ref={cardRef}>
+        <planeGeometry args={[cardWidth, cardHeight]} />
         <meshStandardMaterial
           map={texture}
           side={THREE.DoubleSide}
