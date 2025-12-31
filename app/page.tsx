@@ -151,7 +151,7 @@ export default function Home() {
 
       {/* 3D Preview Modal */}
       {show3D && generatedCard && (
-        <Card3DPreview image={generatedCard} onClose={() => setShow3D(false)} />
+        <Card3DPreview image={generatedCard} onClose={() => setShow3D(false)} theme={theme} />
       )}
     </main>
   );
