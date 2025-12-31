@@ -108,6 +108,9 @@ function GreetingPanel({
   const colors = THEMES[theme];
   const displayMessage = customMessage || colors.subGreeting;
 
+  // Load logo texture
+  const logoTexture = useLoader(THREE.TextureLoader, "/before-logo.svg");
+
   return (
     <group position={position} rotation={rotation}>
       {/* Background */}
@@ -116,50 +119,54 @@ function GreetingPanel({
         <meshStandardMaterial color={colors.cream} />
       </mesh>
 
-      {/* Decorative border */}
-      <mesh position={[0, 0, 0.001]}>
-        <ringGeometry args={[1.0, 1.05, 64]} />
+      {/* Decorative circle border */}
+      <mesh position={[0, 0.15, 0.001]}>
+        <ringGeometry args={[0.95, 1.0, 64]} />
         <meshStandardMaterial color={colors.secondary} metalness={0.7} roughness={0.3} />
       </mesh>
 
-      {/* Main greeting */}
+      {/* Inner circle fill for better text background */}
+      <mesh position={[0, 0.15, 0.0005]}>
+        <circleGeometry args={[0.95, 64]} />
+        <meshStandardMaterial color={colors.cream} />
+      </mesh>
+
+      {/* Main greeting - centered in circle */}
       <Text
-        position={[0, 0.7, 0.01]}
-        fontSize={0.18}
+        position={[0, 0.45, 0.01]}
+        fontSize={0.16}
         color={colors.accent}
         anchorX="center"
         anchorY="middle"
         textAlign="center"
-        maxWidth={2}
+        maxWidth={1.6}
       >
         {colors.greeting}
       </Text>
 
-      {/* Custom or default message */}
+      {/* Custom or default message - centered in circle */}
       <Text
-        position={[0, -0.1, 0.01]}
-        fontSize={0.1}
+        position={[0, -0.05, 0.01]}
+        fontSize={0.09}
         color="#333333"
         anchorX="center"
         anchorY="middle"
         textAlign="center"
-        maxWidth={1.8}
-        lineHeight={1.4}
+        maxWidth={1.5}
+        lineHeight={1.3}
       >
         {displayMessage}
       </Text>
 
-      {/* Before Conseil signature */}
-      <Text
-        position={[0, -1.1, 0.01]}
-        fontSize={0.09}
-        color={colors.secondary}
-        anchorX="center"
-        anchorY="middle"
-        textAlign="center"
-      >
-        Before Conseil
-      </Text>
+      {/* Before Conseil LOGO under the circle */}
+      <mesh position={[0, -1.2, 0.01]}>
+        <planeGeometry args={[1.2, 0.35]} />
+        <meshStandardMaterial
+          map={logoTexture}
+          transparent={true}
+          opacity={0.9}
+        />
+      </mesh>
     </group>
   );
 }
@@ -174,6 +181,9 @@ function BackPanel({
 }) {
   const colors = THEMES[theme];
 
+  // Load logo texture
+  const logoTexture = useLoader(THREE.TextureLoader, "/before-logo.svg");
+
   return (
     <group position={position}>
       {/* Background */}
@@ -182,24 +192,31 @@ function BackPanel({
         <meshStandardMaterial color={colors.primary} />
       </mesh>
 
-      {/* Logo/Branding text */}
+      {/* Before Conseil LOGO */}
+      <mesh position={[0, 0.2, 0.01]}>
+        <planeGeometry args={[1.6, 0.45]} />
+        <meshStandardMaterial
+          map={logoTexture}
+          transparent={true}
+        />
+      </mesh>
+
+      {/* Tagline */}
       <Text
-        position={[0, 0, 0.01]}
-        fontSize={0.12}
+        position={[0, -0.3, 0.01]}
+        fontSize={0.08}
         color={colors.secondary}
         anchorX="center"
         anchorY="middle"
         textAlign="center"
-        maxWidth={2}
-        lineHeight={1.4}
       >
-        {colors.backText}
+        Conseil en Fusions-Acquisitions
       </Text>
 
       {/* Year */}
       <Text
-        position={[0, -1, 0.01]}
-        fontSize={0.1}
+        position={[0, -1.2, 0.01]}
+        fontSize={0.12}
         color={colors.secondary}
         anchorX="center"
         anchorY="middle"
