@@ -124,8 +124,8 @@ function GreetingPanel({
 
       {/* Main greeting */}
       <Text
-        position={[0, 0.8, 0.01]}
-        fontSize={0.22}
+        position={[0, 0.7, 0.01]}
+        fontSize={0.18}
         color={colors.accent}
         anchorX="center"
         anchorY="middle"
@@ -138,21 +138,21 @@ function GreetingPanel({
       {/* Custom or default message */}
       <Text
         position={[0, -0.1, 0.01]}
-        fontSize={customMessage ? 0.11 : 0.12}
+        fontSize={0.1}
         color="#333333"
         anchorX="center"
         anchorY="middle"
         textAlign="center"
         maxWidth={1.8}
-        lineHeight={1.5}
+        lineHeight={1.4}
       >
         {displayMessage}
       </Text>
 
       {/* Before Conseil signature */}
       <Text
-        position={[0, -1.2, 0.01]}
-        fontSize={0.1}
+        position={[0, -1.1, 0.01]}
+        fontSize={0.09}
         color={colors.secondary}
         anchorX="center"
         anchorY="middle"
@@ -185,14 +185,13 @@ function BackPanel({
       {/* Logo/Branding text */}
       <Text
         position={[0, 0, 0.01]}
-        fontSize={0.15}
+        fontSize={0.12}
         color={colors.secondary}
         anchorX="center"
         anchorY="middle"
         textAlign="center"
         maxWidth={2}
         lineHeight={1.4}
-        font="/fonts/Inter-Bold.woff"
       >
         {colors.backText}
       </Text>
@@ -205,7 +204,6 @@ function BackPanel({
         anchorX="center"
         anchorY="middle"
         textAlign="center"
-        font="/fonts/Inter-Regular.woff"
       >
         2026
       </Text>
