@@ -5,6 +5,7 @@ import Image from "next/image";
 import dynamic from "next/dynamic";
 import ImageUploader from "@/components/ImageUploader";
 import ThemeSelector from "@/components/ThemeSelector";
+import ToneSelector, { ToneType } from "@/components/ToneSelector";
 import FormatSelector, { CardFormat, CardStyle } from "@/components/FormatSelector";
 import CardPreview from "@/components/CardPreview";
 import { ThemeType } from "@/lib/prompts";
@@ -17,6 +18,7 @@ const Card3DPreview = dynamic(() => import("@/components/Card3DPreview"), {
 export default function Home() {
   const [selfie, setSelfie] = useState<string | null>(null);
   const [theme, setTheme] = useState<ThemeType>("newYear");
+  const [tone, setTone] = useState<ToneType>("elegant");
   const [format, setFormat] = useState<CardFormat>("bifold");
   const [style, setStyle] = useState<CardStyle>("foldable");
   const [customMessage, setCustomMessage] = useState("");
@@ -35,35 +37,39 @@ export default function Home() {
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: selfie, theme, customMessage }),
+        body: JSON.stringify({
+          image: selfie,
+          theme,
+          tone,
+          customMessage: customMessage || undefined
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Generation failed");
+        throw new Error(data.error || "Échec de la génération");
       }
 
       setGeneratedCard(data.image);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {
       setIsLoading(false);
     }
-  }, [selfie, theme, customMessage]);
+  }, [selfie, theme, tone, customMessage]);
 
   const handleDownload = useCallback(() => {
     if (!generatedCard) return;
 
     const link = document.createElement("a");
     link.href = generatedCard;
-    link.download = `before-conseil-${theme}-2026.jpg`;
+    link.download = `before-conseil-${theme}-${tone}-2026.jpg`;
     link.click();
-  }, [generatedCard, theme]);
+  }, [generatedCard, theme, tone]);
 
   const handlePreview = useCallback(() => {
     if (format === "single") {
-      // For single panel, just show the image in a modal
       handleDownload();
     } else {
       setShow3D(true);
@@ -87,16 +93,16 @@ export default function Home() {
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            Carte de Voeux <span className="text-amber-400">IA</span>
+            Carte de Vœux <span className="text-amber-400">IA</span>
           </h1>
           <p className="text-gray-400">
-            Uploadez votre photo et créez une carte personnalisée
+            Créez une carte personnalisée unique avec l'intelligence artificielle
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Left column - Input */}
-          <div className="space-y-6">
+          <div className="space-y-5">
             <div>
               <h2 className="text-lg font-semibold mb-3 text-amber-400">
                 1. Votre Photo
@@ -117,7 +123,18 @@ export default function Home() {
 
             <div>
               <h2 className="text-lg font-semibold mb-3 text-amber-400">
-                3. Format de Carte
+                3. Ton & Style
+              </h2>
+              <ToneSelector
+                tone={tone}
+                onToneChange={setTone}
+                disabled={isLoading}
+              />
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-3 text-amber-400">
+                4. Format de Carte
               </h2>
               <FormatSelector
                 format={format}
@@ -130,18 +147,15 @@ export default function Home() {
 
             <div>
               <h2 className="text-lg font-semibold mb-3 text-amber-400">
-                4. Message Personnalisé (optionnel)
+                5. Message Personnalisé <span className="text-gray-500 font-normal">(optionnel)</span>
               </h2>
               <textarea
                 value={customMessage}
                 onChange={(e) => setCustomMessage(e.target.value)}
                 disabled={isLoading}
-                placeholder="Ajoutez un message personnel qui apparaîtra à l'intérieur de la carte..."
-                className="w-full h-24 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all resize-none disabled:opacity-50"
+                placeholder="Ajoutez un message personnel..."
+                className="w-full h-20 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 transition-all resize-none disabled:opacity-50"
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Ce message sera affiché sur le panneau intérieur de la carte
-              </p>
             </div>
 
             <button
@@ -167,7 +181,7 @@ export default function Home() {
           {/* Right column - Preview */}
           <div>
             <h2 className="text-lg font-semibold mb-3 text-amber-400">
-              5. Votre Carte
+              6. Votre Carte
             </h2>
             <div className="bg-gray-800/50 rounded-xl p-4 min-h-[400px]">
               <CardPreview
@@ -187,7 +201,7 @@ export default function Home() {
         <footer className="mt-12 text-center text-gray-500 text-sm">
           <p>
             Propulsé par{" "}
-            <span className="text-amber-400">Nano Banana Pro</span> (Gemini AI)
+            <span className="text-amber-400">Gemini AI</span>
           </p>
           <p className="mt-1">© 2026 Before Conseil</p>
         </footer>
