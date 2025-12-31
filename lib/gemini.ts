@@ -27,6 +27,9 @@ IMPORTANT: Use the person from the reference photo provided. Keep their face, ha
         ],
       },
     ],
+    config: {
+      responseModalities: ["Image"],
+    },
   });
 
   // Extract the generated image from response
