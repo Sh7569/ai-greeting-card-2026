@@ -47,7 +47,7 @@ const THEME_ELEMENTS = {
   },
 };
 
-export function generatePrompt(theme: ThemeType, tone: ToneType, customMessage?: string): string {
+export function generatePrompt(theme: ThemeType, tone: ToneType, _customMessage?: string): string {
   const toneStyle = TONE_STYLES[tone];
   const themeElements = THEME_ELEMENTS[theme];
 
@@ -55,7 +55,8 @@ export function generatePrompt(theme: ThemeType, tone: ToneType, customMessage?:
     ? "Bonne Année du Serpent !"
     : "Bonne Année 2026 !";
 
-  const defaultMessage = customMessage || "Before Conseil vous souhaite une année riche en succès et en belles opportunités.";
+  // Note: customMessage is NOT included in AI image - it will appear only on the 3D card inside panel
+  // This avoids duplicate messages
 
   return `Crée une carte de vœux ${themeElements.setting} mettant en scène cette personne.
 
@@ -70,17 +71,18 @@ PERSONNAGE :
 - Le visage et les traits de la personne doivent être parfaitement reconnaissables
 
 TEXTE À INCLURE (OBLIGATOIRE - EN FRANÇAIS UNIQUEMENT) :
-- Titre principal en haut : "${greetingText}" en lettres dorées élégantes
-- Message secondaire : "${defaultMessage}"
-- Signature : "Before Conseil" en bas
+- Titre principal bien visible : "${greetingText}" en grandes lettres dorées élégantes
+- Signature discrète en bas : "Before Conseil"
+- PAS d'autre texte (le message personnalisé sera ajouté séparément)
 
 ⚠️ RÈGLES CRITIQUES :
-1. TOUT le texte doit être EN FRANÇAIS - jamais d'anglais (pas de "Happy", "Success", "Wishes")
-2. Utiliser "succès" (avec accent), jamais "success"
-3. L'image doit être PLATE (pas de perspective 3D, pas d'effet carte pliée)
-4. Format : portrait 3:4
-5. Qualité : professionnelle, prête à imprimer
-6. Le texte doit être lisible et bien intégré au design`;
+1. TOUT le texte doit être EN FRANÇAIS avec accents corrects
+2. Utiliser "Année" (pas "Annee"), "succès" (pas "success"), "opportunités" (pas "opportunites")
+3. JAMAIS de mots anglais (pas de "Happy", "Success", "Wishes", "New Year")
+4. L'image doit être PLATE (pas de perspective 3D, pas d'effet carte pliée)
+5. Format : portrait 3:4
+6. Qualité : professionnelle, haute résolution
+7. Le texte "${greetingText}" doit être très lisible et bien intégré`;
 }
 
 // Legacy export for backward compatibility
